@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: header"/>
+<body>
+
+<div class="container">
+  <div class="col-10 mx-auto">
+    <h1>Edit product</h1>
+    <form th:action="@{product_update}" th:method="post" th:object="${product}">
+      <input type="hidden" th:field="*{id}">
+      <div class="mb-3">
+        <!-- НАИМЕНОВАНИЕ ПРОДУКТА -->
+        <input type="text" class="form-control" th:field="*{title}" placeholder="Enter title">
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" th:field="*{description}" placeholder="Enter description">
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" th:field="*{price}" placeholder="Enter price">
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+
+  </div>
+</div>
+
+<script th:replace="fragments/footer :: scripts"/>
+</body>
+</html>

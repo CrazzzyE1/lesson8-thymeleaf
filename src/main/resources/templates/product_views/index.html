@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: header"/>
+<body>
+
+<!--
+               TODO оживить кнопки НАЗАД и ВПЕРЕД
+               TODO добавить выбор "по сколько элементов отображать"
+               TODO добавить сортировку по каждому полю
+               TODO (если не успели сдать ДЗ до 30.04 - до занятия) выделить в фрагменты повторяющийся код
+-->
+
+<div class="container">
+    <div class="col-10 mx-auto mt-3">
+        <div class="row">
+            <div class="col-3">
+                <h1>Product list</h1>
+            </div>
+            <div class="col-9">
+                <form class="form-inline" th:method="get">
+                    <input type="number" th:value="${param.min}" class="form-control-md" id="min"
+                           name="min" placeholder="Min">
+                    <input type="number" th:value="${param.max}" class="form-control-md" id="max"
+                           name="max" placeholder="Max">
+                    <input type="text" th:value="${param.titleFilter}" class="form-control-md" id="title-filter"
+                           name="titleFilter" placeholder="Find">
+                    <button type="submit" class="btn btn-outline-dark"><i class="fas fa-search"></i></button>
+                    <a class="btn btn-outline-dark" th:href="@{/product/new}">ADD</a>
+                </form>
+            </div>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Price</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${products.hasContent()}" th:each="product : ${products}">
+                <th scope="row" th:text="${product.id}">1</th>
+                <th scope="row" th:text="${product.title}">1</th>
+                <th scope="row" th:text="${product.description}">1</th>
+                <th scope="row" th:text="${product.price}">1</th>
+                <th>
+                    <a class="btn btn-success" th:href="@{/product/{id}(id = ${product.id})}"><i
+                            class="fas fa-edit"></i></a>
+                    <a class="btn btn-danger" th:href="@{/product/delete/{id}(id = ${product.id})}">
+                        <i class="far fa-trash-alt"></i></a>
+                </th>
+            </tr>
+
+            <tr th:unless="${products.hasContent}">
+                <td colspan="5">No data</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${products.hasContent()}">
+        <nav aria-label="product list">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                <li th:each="num : ${#numbers.sequence(1, products.totalPages)}"
+                    class="page-item"
+                    th:classappend="${num == products.number + 1} ? 'active'">
+                    <a class="page-link" th:href="@{/product(
+                    page=${num},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice}
+                    )}">[[${num}]]</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<script th:replace="fragments/footer :: scripts"/>
+</body>
+</html>
