@@ -31,13 +31,18 @@ public class ProductService {
     }
 
     @Transactional
+    public List<Product> getAll() {
+        return productRepository.findAll();
+    }
+
+    @Transactional
     public void remove(Long id) {
         productRepository.deleteById(id);
     }
 
     @Transactional
-    public void addOrUpdate(Product product) {
-        productRepository.save(product);
+    public Product addOrUpdate(Product product) {
+        return productRepository.save(product);
     }
 
     @Transactional
