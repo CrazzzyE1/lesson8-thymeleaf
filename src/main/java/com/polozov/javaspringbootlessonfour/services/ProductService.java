@@ -6,6 +6,7 @@ import com.polozov.javaspringbootlessonfour.repositories.specifications.ProductS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,49 +18,63 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
-	private ProductRepository productRepository;
+    private ProductRepository productRepository;
 
-	@Autowired
-	public void setProductRepository(ProductRepository productRepository) {
-		this.productRepository = productRepository;
-	}
+    @Autowired
+    public void setProductRepository(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
-	@Transactional
-	public Optional<Product> getById(Long id) {
-		return productRepository.findById(id);
-	}
+    @Transactional
+    public Optional<Product> getById(Long id) {
+        return productRepository.findById(id);
+    }
 
-	@Transactional
-	public void remove(Long id) {
-		productRepository.deleteById(id);
-	}
+    @Transactional
+    public List<Product> getAll() {
+        return productRepository.findAll();
+    }
 
-	@Transactional
-	public void addOrUpdate(Product product) {
-		productRepository.save(product);
-	}
+    @Transactional
+    public void remove(Long id) {
+        productRepository.deleteById(id);
+    }
 
-	@Transactional
-	public Page<Product> getByParams(Optional<String> nameFilter,
-	                                 Optional<BigDecimal> min,
-	                                 Optional<BigDecimal> max,
-	                                 Optional<Integer> page,
-	                                 Optional<Integer> size) {
+    @Transactional
+    public Product addOrUpdate(Product product) {
+        return productRepository.save(product);
+    }
 
-		Specification<Product> specification = Specification.where(null);
-		if (nameFilter.isPresent()) {
-			specification = specification.and(ProductSpecification.titleLike(nameFilter.get()));
-		}
+    @Transactional
+    public Page<Product> getByParams(Optional<String> nameFilter,
+                                     Optional<BigDecimal> min,
+                                     Optional<BigDecimal> max,
+                                     Optional<Integer> page,
+                                     Optional<Integer> size,
+                                     Optional<String> sort) {
 
-		if (min.isPresent()) {
-			specification = specification.and(ProductSpecification.ge(min.get()));
-		}
+        Specification<Product> specification = Specification.where(null);
+        if (nameFilter.isPresent()) {
+            specification = specification.and(ProductSpecification.titleLike(nameFilter.get()));
+        }
 
-		if (max.isPresent()) {
-			specification = specification.and(ProductSpecification.le(max.get()));
-		}
+        if (min.isPresent()) {
+            specification = specification.and(ProductSpecification.ge(min.get()));
+        }
 
-		return productRepository.findAll(specification,
-				PageRequest.of(page.orElse(1) - 1, size.orElse(4)));
-	}
+        if (max.isPresent()) {
+            specification = specification.and(ProductSpecification.le(max.get()));
+        }
+
+        // Какая-то жесть, но по другому не получилось отработать, если sort.get() == "";
+        String tmp;
+        if(sort.isPresent() && sort.get().equals("")) {
+            tmp = "id";
+        } else {
+            tmp = sort.orElse("id");
+        }
+
+        return productRepository.findAll(specification,
+                PageRequest.of(page.orElse(1) - 1, size.orElse(4), Sort.Direction.ASC, (tmp)));
+    }
 }

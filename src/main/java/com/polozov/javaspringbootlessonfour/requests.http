@@ -1,0 +1,26 @@
+GET http://localhost:8080/api/v1/product/list
+###
+GET http://localhost:8080/api/v1/product/7/id
+###
+POST http://localhost:8080/api/v1/product/
+Content-Type: application/json
+
+{
+  "title": "new entity2",
+  "description": "WOWOWOWOWOW2",
+  "price": "5552"
+}
+
+###
+PUT http://localhost:8080/api/v1/product/
+Content-Type: application/json
+
+  {
+    "id": "9",
+    "title": "Galaxy SS",
+    "description": "Latest model of galaxy",
+    "price": "2400"
+  }
+###
+
+DELETE http://localhost:8080/api/v1/product/11/id

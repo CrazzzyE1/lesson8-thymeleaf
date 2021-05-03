@@ -3,13 +3,6 @@
 <head th:replace="fragments/head :: header"/>
 <body>
 
-<!--
-               TODO оживить кнопки НАЗАД и ВПЕРЕД
-               TODO добавить выбор "по сколько элементов отображать"
-               TODO добавить сортировку по каждому полю
-               TODO (если не успели сдать ДЗ до 30.04 - до занятия) выделить в фрагменты повторяющийся код
--->
-
 <div class="container">
     <div class="col-10 mx-auto mt-3">
         <div class="row">
@@ -18,10 +11,10 @@
             </div>
             <div class="col-9">
                 <form class="form-inline" th:method="get">
-                    <input type="number" th:value="${param.min}" class="form-control-md" id="min"
-                           name="min" placeholder="Min">
-                    <input type="number" th:value="${param.max}" class="form-control-md" id="max"
-                           name="max" placeholder="Max">
+                    <input type="number" th:value="${param.minPrice}" class="form-control-md" id="min"
+                           name="minPrice" placeholder="Min">
+                    <input type="number" th:value="${param.maxPrice}" class="form-control-md" id="max"
+                           name="maxPrice" placeholder="Max">
                     <input type="text" th:value="${param.titleFilter}" class="form-control-md" id="title-filter"
                            name="titleFilter" placeholder="Find">
                     <button type="submit" class="btn btn-outline-dark"><i class="fas fa-search"></i></button>
@@ -33,10 +26,38 @@
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">id</th>
-                <th scope="col">Name</th>
-                <th scope="col">Description</th>
-                <th scope="col">Price</th>
+                <th scope="col">id <a th:href="@{/product(
+                    page=${products.number + 1},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = 'id'
+                    )}"><i class="fas fa-pizza-slice"></i></a></th>
+                <th scope="col">Name <a th:href="@{/product(
+                    page=${products.number + 1},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = 'title'
+                    )}"><i class="fas fa-pizza-slice"></i></a></th>
+                <th scope="col">Description <a th:href="@{/product(
+                    page=${products.number + 1},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = 'description'
+                    )}"><i class="fas fa-pizza-slice"></i></a></th>
+                <th scope="col">Price <a th:href="@{/product(
+                    page=${products.number + 1},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = 'price'
+                    )}"><i class="fas fa-pizza-slice"></i></a></th>
                 <th scope="col">Actions</th>
             </tr>
             </thead>
@@ -64,7 +85,14 @@
     <div th:if="${products.hasContent()}">
         <nav aria-label="product list">
             <ul class="pagination justify-content-center">
-                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                <li th:if="${products.totalPages > 2 && products.number > 0}" class="page-item"><a class="page-link" th:href="@{/product(
+                    page=${products.number},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = ${param.sort}
+                    )}">Previous</a></li>
                 <li th:each="num : ${#numbers.sequence(1, products.totalPages)}"
                     class="page-item"
                     th:classappend="${num == products.number + 1} ? 'active'">
@@ -73,13 +101,39 @@
                     size=${products.size},
                     titleFilter=${param.titleFilter},
                     minPrice=${param.minPrice},
-                    maxPrice=${param.maxPrice}
+                    maxPrice=${param.maxPrice},
+                    sort = ${param.sort}
                     )}">[[${num}]]</a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                <li th:if="${products.totalPages > 2  && products.number < products.totalPages - 1}" class="page-item"><a class="page-link" th:href="@{/product(
+                    page=${products.number + 2},
+                    size=${products.size},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = ${param.sort}
+                    )}">NEXT</a></li>
             </ul>
         </nav>
     </div>
+
+    <div th:if="${products.hasContent()}">
+        <nav aria-label="pagination">
+            <ul class="pagination justify-content-center">
+                <li th:each="number : ${#numbers.sequence(2, 4)}" class="page-item"
+                    th:classappend="${number == products.size} ? 'active'">
+                    <a class="page-link" th:href="@{/product(
+                    size=${number},
+                    titleFilter=${param.titleFilter},
+                    minPrice=${param.minPrice},
+                    maxPrice=${param.maxPrice},
+                    sort = ${param.sort}
+                    )}">[[${number}]]</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
 </div>
 
 <script th:replace="fragments/footer :: scripts"/>
